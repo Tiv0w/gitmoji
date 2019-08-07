@@ -1,3 +1,35 @@
+;;; gitmoji-commit.el --- Add a gitmoji selector to your commits.  -*- lexical-binding: t; -*-
+
+;; Author: Tiv0w <https:/github.com/Tiv0w>
+;; URL: https://github.com/Tiv0w/gitmoji-commit.git
+;; Version: 0.0.2
+;; Package-Requires: ((emacs "24.1") (ivy ""))
+;; Keywords: emoji, git, gitmoji, commit
+
+;; This file is not part of GNU Emacs.
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; To load this file, add (require 'gitmoji-commit) to your init file.
+;;
+;; To use it, simply use `M-x gitmoji-commit-mode' and you will be
+;; prompted to choose a gitmoji when using git-commit.
+
+;;; Code:
+
 (defvar gitmoji--all-emoji
   '(("Improving structure / format of the code." . ":art:")
     ("Improving performance." . ":zap:")
