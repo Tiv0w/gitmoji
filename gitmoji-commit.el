@@ -62,7 +62,7 @@
     ("Work about Kubernetes" . ":wheel_of_dharma:")
     ("Adding or updating types (Flow, TypeScript)" . ":label:")))
 
-(defun gitmoji-picker ()
+(defun gitmoji-insert ()
   "Choose a gitmoji."
   (interactive)
   (ivy-read "Choose a gitmoji: "
@@ -76,12 +76,13 @@
                       (insert " "))))
 
 ;;;###autoload
-(define-minor-mode gitmoji-chooser-mode
+(define-minor-mode gitmoji-commit-mode
   "Toggle gitmoji-chooser mode"
+  :global t
   :init-value nil
   :lighter " Gitmoji"
-  (if gitmoji-chooser-mode
-      (add-hook 'git-commit-mode-hook 'gitmoji-picker)
-    (remove-hook 'git-commit-mode-hook 'gitmoji-picker)))
+  (if gitmoji-commit-mode
+      (add-hook 'git-commit-mode-hook 'gitmoji-insert)
+    (remove-hook 'git-commit-mode-hook 'gitmoji-insert)))
 
-(provide 'gitmoji-chooser)
+(provide 'gitmoji-commit)
