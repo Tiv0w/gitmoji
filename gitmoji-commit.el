@@ -30,7 +30,7 @@
 
 ;;; Code:
 
-(defvar gitmoji--all-emoji
+(defvar gitmoji-commit--all-emoji
   '(("Improving structure / format of the code." . ":art:")
     ("Improving performance." . ":zap:")
     ("Removing code or files." . ":fire:")
@@ -94,7 +94,7 @@
     ("Work about Kubernetes" . ":wheel_of_dharma:")
     ("Adding or updating types (Flow, TypeScript)" . ":label:")))
 
-(defun gitmoji-insert ()
+(defun gitmoji-commit-insert ()
   "Choose a gitmoji."
   (interactive)
   (ivy-read "Choose a gitmoji: "
