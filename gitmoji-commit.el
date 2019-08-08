@@ -30,7 +30,7 @@
 
 ;;; Code:
 
-(defvar gitmoji-commit--all-emoji
+(defvar gitmoji-commit--all-emojis
   '(("Improving structure / format of the code." . ":art:")
     ("Improving performance." . ":zap:")
     ("Removing code or files." . ":fire:")
@@ -102,7 +102,7 @@
                       (cons
                        (concat (cdr x) " — " (car x))
                        x))
-                    gitmoji--all-emoji)
+                    gitmoji-commit--all-emojis)
             :action (lambda (x)
                       (insert (cdr (cdr x)))
                       (insert " "))))
@@ -114,7 +114,7 @@
   :init-value nil
   :lighter " Gitmoji"
   (if gitmoji-commit-mode
-      (add-hook 'git-commit-mode-hook 'gitmoji-insert)
-    (remove-hook 'git-commit-mode-hook 'gitmoji-insert)))
+      (add-hook 'git-commit-mode-hook 'gitmoji-commit-insert)
+    (remove-hook 'git-commit-mode-hook 'gitmoji-commit-insert)))
 
 (provide 'gitmoji-commit)
