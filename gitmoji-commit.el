@@ -92,7 +92,10 @@
     ("Experimenting new things" . ":alembic:")
     ("Improving SEO" . ":mag:")
     ("Work about Kubernetes" . ":wheel_of_dharma:")
-    ("Adding or updating types (Flow, TypeScript)" . ":label:")))
+    ("Adding or updating types (Flow, TypeScript)" . ":label:")
+    ("Adding or updating seed files" . ":seedling:")
+    ("Adding, updating, or removing feature flags" . ":triangular_flag_on_post:")
+    ("Adding or updating animations and transitions" . ":dizzy:")))
 
 (defun gitmoji-commit-insert ()
   "Choose a gitmoji."
