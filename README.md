@@ -1,2 +1,2 @@
-# gitmoji-commit
-Add a gitmoji selector to your commits
+# gitmoji
+Add a gitmoji selector to your commits and easily insert gitmojis :sparkles:
