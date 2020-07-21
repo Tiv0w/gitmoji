@@ -30,6 +30,9 @@
 ;;
 ;; To use it, simply use `M-x gitmoji-commit-mode' and you will be
 ;; prompted to choose a gitmoji when using git-commit.
+;;
+;; You could also want to insert a gitmoji in current buffer,
+;; for that you would `M-x gitmoji-insert' and voilà!
 
 ;;; Code:
 
