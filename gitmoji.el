@@ -2,7 +2,7 @@
 
 ;; Author: Tiv0w <https:/github.com/Tiv0w>
 ;; URL: https://github.com/Tiv0w/gitmoji-commit.git
-;; Version: 0.0.2
+;; Version: 0.1.0
 ;; Package-Requires: ((emacs "24.1") (ivy ""))
 ;; Keywords: emoji, git, gitmoji, commit
 
