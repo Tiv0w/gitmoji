@@ -1,4 +1,4 @@
-;;; gitmoji-commit.el --- Add a gitmoji selector to your commits.  -*- lexical-binding: t; -*-
+;;; gitmoji.el --- Add a gitmoji selector to your commits.  -*- lexical-binding: t; -*-
 
 ;; Author: Tiv0w <https:/github.com/Tiv0w>
 ;; URL: https://github.com/Tiv0w/gitmoji-commit.git
@@ -23,7 +23,10 @@
 
 ;;; Commentary:
 
-;; To load this file, add (require 'gitmoji-commit) to your init file.
+;; This package is intended to help people with adding gitmojis to their
+;; commits when commiting through Emacs.
+
+;; To load this file, add `(require 'gitmoji)' to your init file.
 ;;
 ;; To use it, simply use `M-x gitmoji-commit-mode' and you will be
 ;; prompted to choose a gitmoji when using git-commit.
@@ -125,4 +128,4 @@
       (add-hook 'git-commit-mode-hook 'gitmoji-commit-insert)
     (remove-hook 'git-commit-mode-hook 'gitmoji-commit-insert)))
 
-(provide 'gitmoji-commit)
+(provide 'gitmoji)
