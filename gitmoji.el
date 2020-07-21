@@ -33,7 +33,7 @@
 
 ;;; Code:
 
-(defvar gitmoji-commit--all-emojis
+(defvar gitmojis-list
   '(("Improving structure / format of the code."  ":art:"  #x1f3a8)
     ("Improving performance." ":zap:" #x26A1)
     ("Removing code or files." ":fire:" #x1F525)
@@ -100,32 +100,43 @@
     ("Adding, updating, or removing feature flags" ":triangular_flag_on_post:" #x1F6A9)
     ("Adding or updating animations and transitions" ":dizzy:" #x1F4AB)))
 
-(defvar gitmoji-use-emoji nil)
+(defvar gitmoji--insert-utf8-emoji nil
+  "When t, inserts the utf8 emoji character instead of the github-style representation.
+Example: ⚡ instead of :zap:.
+Default: nil.")
 
-(defun gitmoji-commit-insert ()
-  "Choose a gitmoji."
+(defvar gitmoji--display-utf8-emoji nil
+  "When t, displays the utf8 emoji character in the gitmoji choice list.
+Default: nil.")
+
+(defun gitmoji-insert ()
+  "Choose a gitmoji and insert it in the current buffer."
   (interactive)
   (ivy-read "Choose a gitmoji: "
             (mapcar (lambda (x)
                       (cons
-                       (concat (cadr x) " — " (car x))
+                       (concat
+                        (when gitmoji--display-utf8-emoji
+                          (concat (string (caddr x)) " - "))
+                        (cadr x)
+                        " — "
+                        (car x))
                        x))
-                    gitmoji-commit--all-emojis)
+                    gitmojis-list)
             :action (lambda (x)
-                      (if gitmoji-use-emoji
+                      (if gitmoji--insert-utf8-emoji
                           (insert-char (caddr (cdr x)))
-                          (insert (cadr (cdr x)))
-                        )
+                        (insert (cadr (cdr x))))
                       (insert " "))))
 
 ;;;###autoload
 (define-minor-mode gitmoji-commit-mode
-  "Toggle gitmoji-chooser mode"
+  "Toggle gitmoji-commit mode. This is a global setting."
   :global t
   :init-value nil
   :lighter " Gitmoji"
   (if gitmoji-commit-mode
-      (add-hook 'git-commit-mode-hook 'gitmoji-commit-insert)
-    (remove-hook 'git-commit-mode-hook 'gitmoji-commit-insert)))
+      (add-hook 'git-commit-mode-hook 'gitmoji-insert)
+    (remove-hook 'git-commit-mode-hook 'gitmoji-insert)))
 
 (provide 'gitmoji)
