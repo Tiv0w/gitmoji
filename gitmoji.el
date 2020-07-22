@@ -107,25 +107,38 @@ Default: nil.")
   "When t, displays the utf8 emoji character in the gitmoji choice list.
 Default: nil.")
 
+(defun gitmoji-insert--candidates ()
+  (mapcar (lambda (x)
+            (let ((description (car x))
+                  (shortcode (cadr x))
+                  (utf8 (caddr x)))
+              (cons
+               (concat
+                (when gitmoji--display-utf8-emoji
+                  (concat (string utf8) " - "))
+                shortcode
+                " — "
+                description)
+               x)))
+          gitmojis-list))
+
+(defun gitmoji-insert--action (x)
+  (let ((utf8 (cadddr x))
+        (shortcode (caddr x)))
+    (if gitmoji--insert-utf8-emoji
+        (insert-char utf8)
+      (insert shortcode)))
+  (insert " "))
+
 (defun gitmoji-insert ()
   "Choose a gitmoji and insert it in the current buffer."
   (interactive)
-  (ivy-read "Choose a gitmoji: "
-            (mapcar (lambda (x)
-                      (cons
-                       (concat
-                        (when gitmoji--display-utf8-emoji
-                          (concat (string (caddr x)) " - "))
-                        (cadr x)
-                        " — "
-                        (car x))
-                       x))
-                    gitmojis-list)
-            :action (lambda (x)
-                      (if gitmoji--insert-utf8-emoji
-                          (insert-char (caddr (cdr x)))
-                        (insert (cadr (cdr x))))
-                      (insert " "))))
+  (let ((candidates (gitmoji-insert--candidates)))
+    (ivy-read
+     "Choose a gitmoji: "
+     candidates
+     :action #'gitmoji-insert--action
+     )))
 
 ;;;###autoload
 (define-minor-mode gitmoji-commit-mode
