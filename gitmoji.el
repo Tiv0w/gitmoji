@@ -169,7 +169,7 @@ These can have one of the following values
   (interactive)
   (helm :sources `((name . "Choose a gitmoji:")
                     (candidates . ,(gitmoji-insert--candidates))
-                    (action . (lambda (candidate) (gitmoji-insert--action candidate))))))
+                    (action . (lambda (candidate) (gitmoji-insert--action (append '(" ") candidate)))))))
 
 (defun gitmoji-insert ()
   (cond
