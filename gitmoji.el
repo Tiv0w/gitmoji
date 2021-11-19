@@ -110,6 +110,27 @@ Default: nil.")
   "When t, displays the utf8 emoji character in the gitmoji choice list.
 Default: nil.")
 
+;;;###autoload
+(defun gitmoji-set-selection-backend (backend)
+  "Set the backend for selecting emojis.
+
+BACKEND is a valid backend name, see `gitmoji-selection-backend"
+  (setq-default gitmoji-selection-backend backend))
+
+(defcustom gitmoji-selection-backend
+  '(helm ivy)
+  "The backend for the selection of emojis.
+
+These can have one of the following values
+
+`helm'  - Use Helm
+`ivy'   - Use Ivy"
+  :type '(set
+          (const :tag "Helm" helm)
+          (const :tag "Ivy" ivy))
+  :set (lambda (_ value) (gitmoji-set-selection-backend value))
+  :group 'gitmoji)
+
 (defun gitmoji-insert--candidates ()
   (mapcar (lambda (x)
             (let ((description (car x))
@@ -133,8 +154,8 @@ Default: nil.")
       (insert shortcode)))
   (insert " "))
 
-(defun gitmoji-insert ()
-  "Choose a gitmoji and insert it in the current buffer."
+(defun gitmoji-insert-ivy ()
+  "Choose a gitmoji with ivy and insert it in the current buffer."
   (interactive)
   (let ((candidates (gitmoji-insert--candidates)))
     (ivy-read
@@ -142,6 +163,20 @@ Default: nil.")
      candidates
      :action #'gitmoji-insert--action
      )))
+
+(defun gitmoji-insert-helm ()
+  "Choose a gitmoji with helm and insert it in the current buffer."
+  (interactive)
+  (helm :sources `((name . "Choose a gitmoji:")
+                    (candidates . ,(gitmoji-insert--candidates))
+                    (action . (lambda (candidate) (gitmoji-insert--action candidate))))))
+
+(defun gitmoji-insert ()
+  (cond
+   ((memql 'ivy gitmoji-selection-backend) (gitmoji-insert-ivy))
+   ((memql 'helm gitmoji-selection-backend) (gitmoji-insert-helm))
+   (t (warn "No valid backend selected for Gitmoji."))
+  ))
 
 ;;;###autoload
 (define-minor-mode gitmoji-commit-mode
