@@ -101,14 +101,18 @@
     ("Simple fix for a non-critical issue." ":adhesive_bandage:" #x1FA79)
     ("Data exploration/inspection." ":monocle_face:" #x1F9D0)))
 
-(defvar gitmoji--insert-utf8-emoji nil
+(defcustom gitmoji--insert-utf8-emoji nil
   "When t, inserts the utf8 emoji character instead of the github-style representation.
 Example: ⚡ instead of :zap:.
-Default: nil.")
+Default: nil."
+  :type 'boolean
+  :group 'gitmoji)
 
-(defvar gitmoji--display-utf8-emoji nil
+(defcustom gitmoji--display-utf8-emoji nil
   "When t, displays the utf8 emoji character in the gitmoji choice list.
-Default: nil.")
+Default: nil."
+  :type 'boolean
+  :group 'gitmoji)
 
 ;;;###autoload
 (defun gitmoji-set-selection-backend (backend)
