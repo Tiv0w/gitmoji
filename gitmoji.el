@@ -122,16 +122,18 @@ BACKEND is a valid backend name, see `gitmoji-selection-backend"
   (setq-default gitmoji-selection-backend backend))
 
 (defcustom gitmoji-selection-backend
-  '(helm ivy)
+  '(helm ivy consult)
   "The backend for the selection of emojis.
 
 These can have one of the following values
 
-`helm'  - Use Helm
-`ivy'   - Use Ivy"
+`helm'    - Use Helm
+`ivy'     - Use Ivy
+`consult' - Use Consult"
   :type '(set
           (const :tag "Helm" helm)
-          (const :tag "Ivy" ivy))
+          (const :tag "Ivy" ivy)
+          (const :tag "Consult" consult))
   :set (lambda (_ value) (gitmoji-set-selection-backend value))
   :group 'gitmoji)
 
@@ -175,10 +177,27 @@ These can have one of the following values
                     (candidates . ,(gitmoji-insert--candidates))
                     (action . (lambda (candidate) (gitmoji-insert--action (append '(" ") candidate)))))))
 
+(defvar consult--gitmoji-history nil)
+  
+(defun gitmoji-insert-consult ()
+  "Choose a gitmoji with consult and insert it in the current buffer."
+  (interactive)
+  (gitmoji-insert--action
+   (consult--read
+    (gitmoji-insert--candidates)
+    :prompt "Choose a gitmoji: "
+    :history 'consult--gitmoji-history
+    :sort t
+    :lookup #'consult--lookup-cdr
+    ))
+  )
+
+
 (defun gitmoji-insert ()
   (cond
    ((memql 'ivy gitmoji-selection-backend) (gitmoji-insert-ivy))
    ((memql 'helm gitmoji-selection-backend) (gitmoji-insert-helm))
+   ((memql 'consult gitmoji-selection-backend) (gitmoji-insert-consult))
    (t (warn "No valid backend selected for Gitmoji."))
   ))
 
