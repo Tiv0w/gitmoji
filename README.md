@@ -11,15 +11,28 @@ Then you would put this snippet in your config file(s):
 (require 'gitmoji)
 (setq gitmoji--insert-utf8-emoji nil
       gitmoji--display-utf8-emoji nil) ;; These are the defaults.
+(setq gitmoji-selection-backend 'ivy)
 ```
 
 ## Customization
 
 - `gitmoji--insert-utf8-emoji`:
+
   When t, inserts the utf8 emoji character into the buffer instead of the github-style representation.
+  
   Example: :zap: instead of `:zap:`.
+  
   Default: nil.
 
 - `gitmoji--display-utf8-emoji`:
+
   When t, displays the utf8 emoji character in the gitmoji choice list.
+  
   Default: nil.
+
+- `gitmoji-selection-backend`: 
+
+  Backend completion mechanism.
+
+  Available optinos: `'helm` ,`'ivy`, `'consult`.
+  
