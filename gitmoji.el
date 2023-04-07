@@ -174,8 +174,8 @@ These can have one of the following values
   "Choose a gitmoji with helm and insert it in the current buffer."
   (interactive)
   (helm :sources `((name . "Choose a gitmoji:")
-                    (candidates . ,(gitmoji-insert--candidates))
-                    (action . (lambda (candidate) (gitmoji-insert--action (append '(" ") candidate)))))))
+                   (candidates . ,(gitmoji-insert--candidates))
+                   (action . (lambda (candidate) (gitmoji-insert--action (append '(" ") candidate)))))))
 
 (defun gitmoji-insert-consult ()
   "Choose a gitmoji with consult and insert it in the current buffer."
@@ -185,10 +185,12 @@ These can have one of the following values
     (gitmoji-insert--action candidate)))
 
 (defun gitmoji-insert ()
+  "Choose a gitmoji and insert it in the current buffer."
+  (interactive)
   (cond
-   ((memql 'ivy gitmoji-selection-backend) (gitmoji-insert-ivy))
-   ((memql 'helm gitmoji-selection-backend) (gitmoji-insert-helm))
-   ((memql 'consult gitmoji-selection-backend) (gitmoji-insert-consult))
+   ((and (memql 'ivy gitmoji-selection-backend) (featurep 'ivy)) (gitmoji-insert-ivy))
+   ((and (memql 'helm gitmoji-selection-backend) (featurep 'helm)) (gitmoji-insert-helm))
+   ((and (memql 'consult gitmoji-selection-backend) (featurep 'consult)) (gitmoji-insert-consult))
    (t (warn "No valid backend selected for Gitmoji."))
    ))
 
