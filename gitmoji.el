@@ -122,15 +122,17 @@ BACKEND is a valid backend name, see `gitmoji-selection-backend"
   (setq-default gitmoji-selection-backend backend))
 
 (defcustom gitmoji-selection-backend
-  '(helm ivy)
+  '(helm ivy consult)
   "The backend for the selection of emojis.
 
 These can have one of the following values
 
 `helm'  - Use Helm
-`ivy'   - Use Ivy"
+`ivy'   - Use Ivy
+`consult'   - Use Consult"
   :type '(set
           (const :tag "Helm" helm)
+          (const :tag "Consult" consult)
           (const :tag "Ivy" ivy))
   :set (lambda (_ value) (gitmoji-set-selection-backend value))
   :group 'gitmoji)
@@ -175,12 +177,20 @@ These can have one of the following values
                     (candidates . ,(gitmoji-insert--candidates))
                     (action . (lambda (candidate) (gitmoji-insert--action (append '(" ") candidate)))))))
 
+(defun gitmoji-insert-consult ()
+  "Choose a gitmoji with consult and insert it in the current buffer."
+  (interactive)
+  (let* ((candidates (gitmoji-insert--candidates))
+         (candidate (assoc (completing-read "Choose a gitmoji: " candidates) candidates)))
+    (gitmoji-insert--action candidate)))
+
 (defun gitmoji-insert ()
   (cond
    ((memql 'ivy gitmoji-selection-backend) (gitmoji-insert-ivy))
    ((memql 'helm gitmoji-selection-backend) (gitmoji-insert-helm))
+   ((memql 'consult gitmoji-selection-backend) (gitmoji-insert-consult))
    (t (warn "No valid backend selected for Gitmoji."))
-  ))
+   ))
 
 ;;;###autoload
 (define-minor-mode gitmoji-commit-mode
