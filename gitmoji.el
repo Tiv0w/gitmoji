@@ -153,35 +153,48 @@ These can have one of the following values
           gitmojis-list))
 
 (defun gitmoji-insert--action (x)
-  (let ((utf8 (cadddr x))
-        (shortcode (caddr x)))
-    (if gitmoji--insert-utf8-emoji
-        (insert-char utf8)
-      (insert shortcode)))
-  (insert " "))
+  "Insert either Gitmoji's symbol or shortcode.
+Based on the value of gitmoji--insert-utf8-emoji global variable,
+ followed by a space character.
+It takes a single argument X, which is a list of selected Gitmoji's information."
+  (if x
+      (progn
+        (let ((utf8 (cadddr x))
+              (shortcode (caddr x)))
+          (if gitmoji--insert-utf8-emoji
+              (insert-char utf8)
+            (insert shortcode)))
+        (insert " "))))
 
 (defun gitmoji-insert-ivy ()
   "Choose a gitmoji with ivy and insert it in the current buffer."
   (interactive)
   (let ((candidates (gitmoji-insert--candidates)))
-    (ivy-read
-     "Choose a gitmoji: "
-     candidates
-     :action #'gitmoji-insert--action
-     )))
+    (condition-case nil
+        (ivy-read
+         "Choose a gitmoji: "
+         candidates
+         :action #'gitmoji-insert--action)
+      (quit nil))))
 
 (defun gitmoji-insert-helm ()
   "Choose a gitmoji with helm and insert it in the current buffer."
   (interactive)
-  (helm :sources `((name . "Choose a gitmoji:")
-                   (candidates . ,(gitmoji-insert--candidates))
-                   (action . (lambda (candidate) (gitmoji-insert--action (append '(" ") candidate)))))))
+  (condition-case nil
+      (helm :sources `((name . "Choose a gitmoji:")
+                       (candidates . ,(gitmoji-insert--candidates))
+                       (action . (lambda (candidate) (gitmoji-insert--action (append '(" ") candidate))))))
+    (helm-quit nil)))
 
 (defun gitmoji-insert-consult ()
   "Choose a gitmoji with consult and insert it in the current buffer."
   (interactive)
   (let* ((candidates (gitmoji-insert--candidates))
-         (candidate (assoc (completing-read "Choose a gitmoji: " candidates) candidates)))
+         (candidate (assoc
+                     (condition-case nil
+                         (completing-read "Choose a gitmoji: " candidates)
+                       (quit nil))
+                     candidates)))
     (gitmoji-insert--action candidate)))
 
 (defun gitmoji-insert ()
@@ -191,8 +204,7 @@ These can have one of the following values
    ((and (memql 'ivy gitmoji-selection-backend) (featurep 'ivy)) (gitmoji-insert-ivy))
    ((and (memql 'helm gitmoji-selection-backend) (featurep 'helm)) (gitmoji-insert-helm))
    ((and (memql 'consult gitmoji-selection-backend) (featurep 'consult)) (gitmoji-insert-consult))
-   (t (warn "No valid backend selected for Gitmoji."))
-   ))
+   (t (warn "No valid backend selected for Gitmoji."))))
 
 ;;;###autoload
 (define-minor-mode gitmoji-commit-mode
