@@ -47,8 +47,9 @@
     ("Deploy stuff." ":rocket:" #x1F680)
     ("Add or update the UI and style files." ":lipstick:" #x1F484)
     ("Begin a project." ":tada:" #x1F389)
-    ("Add or update tests." ":white_check_mark:" #x2705)
-    ("Fix security issues." ":lock:" #x1F512)
+    ("Add, update, or pass tests." ":white_check_mark:" #x2705)
+    ("Fix security or privacy issues." ":lock:" #x1F512)
+    ("Add or update secrets." ":closed_lock_with_key:" #x1F510)
     ("Release / Version tags." ":bookmark:" #x1F516)
     ("Fix compiler / linter warnings." ":rotating_light:" #x1F6A8)
     ("Work in progress." ":construction:" #x1F6A7)
@@ -92,14 +93,24 @@
     ("Perform experiments." ":alembic:" #x2697)
     ("Improve SEO." ":mag:" #x1F50D)
     ("Add or update types." ":label:" #x1F3F7)
-    ("Add or update seed files." ":seedling:" #x1F331)
+    ("Add or update seed files." ":seedling:" #xFFFD)
     ("Add, update, or remove feature flags." ":triangular_flag_on_post:" #x1F6A9)
     ("Catch errors." ":goal_net:" #x1F945)
     ("Add or update animations and transitions." ":dizzy:" #x1F4AB)
     ("Deprecate code that needs to be cleaned up." ":wastebasket:" #x1F5D1)
     ("Work on code related to authorization, roles and permissions." ":passport_control:" #x1F6C2)
     ("Simple fix for a non-critical issue." ":adhesive_bandage:" #x1FA79)
-    ("Data exploration/inspection." ":monocle_face:" #x1F9D0)))
+    ("Data exploration/inspection." ":monocle_face:" #x1F9D0)
+    ("Remove dead code." ":coffin:" #x26B0)
+    ("Add a failing test." ":test_tube:" #x1F9EA)
+    ("Add or update business logic." ":necktie:" #x1F454)
+    ("Add or update healthcheck." ":stethoscope:" #x1FA7A)
+    ("Infrastructure related changes." ":bricks:" #x1F9F1)
+    ("Improve developer experience." ":technologist:" #x1F9D1)
+    ("Add sponsorships or money related infrastructure." ":money_with_wings:" #x1F4B8)
+    ("Add or update code related to multithreading or concurrency." ":thread:" #x1F9F5)
+    ("Add or update code related to validation." ":safety_vest:" #x1F9BA))
+  )
 
 (defcustom gitmoji--insert-utf8-emoji nil
   "When t, inserts the utf8 emoji character instead of the github-style representation.
@@ -122,15 +133,17 @@ BACKEND is a valid backend name, see `gitmoji-selection-backend"
   (setq-default gitmoji-selection-backend backend))
 
 (defcustom gitmoji-selection-backend
-  '(helm ivy)
+  '(helm ivy consult)
   "The backend for the selection of emojis.
 
 These can have one of the following values
 
 `helm'  - Use Helm
-`ivy'   - Use Ivy"
+`ivy'   - Use Ivy
+`consult'   - Use Consult"
   :type '(set
           (const :tag "Helm" helm)
+          (const :tag "Consult" consult)
           (const :tag "Ivy" ivy))
   :set (lambda (_ value) (gitmoji-set-selection-backend value))
   :group 'gitmoji)
@@ -151,36 +164,58 @@ These can have one of the following values
           gitmojis-list))
 
 (defun gitmoji-insert--action (x)
-  (let ((utf8 (cadddr x))
-        (shortcode (caddr x)))
-    (if gitmoji--insert-utf8-emoji
-        (insert-char utf8)
-      (insert shortcode)))
-  (insert " "))
+  "Insert either Gitmoji's symbol or shortcode.
+Based on the value of gitmoji--insert-utf8-emoji global variable,
+ followed by a space character.
+It takes a single argument X, which is a list of selected Gitmoji's information."
+  (if x
+      (progn
+        (let ((utf8 (cadddr x))
+              (shortcode (caddr x)))
+          (if gitmoji--insert-utf8-emoji
+              (insert-char utf8)
+            (insert shortcode)))
+        (insert " "))))
 
 (defun gitmoji-insert-ivy ()
   "Choose a gitmoji with ivy and insert it in the current buffer."
   (interactive)
   (let ((candidates (gitmoji-insert--candidates)))
-    (ivy-read
-     "Choose a gitmoji: "
-     candidates
-     :action #'gitmoji-insert--action
-     )))
+    (condition-case nil
+        (ivy-read
+         "Choose a gitmoji: "
+         candidates
+         :action #'gitmoji-insert--action)
+      (quit nil))))
 
 (defun gitmoji-insert-helm ()
   "Choose a gitmoji with helm and insert it in the current buffer."
   (interactive)
-  (helm :sources `((name . "Choose a gitmoji:")
-                    (candidates . ,(gitmoji-insert--candidates))
-                    (action . (lambda (candidate) (gitmoji-insert--action (append '(" ") candidate)))))))
+  (condition-case nil
+      (helm :sources `((name . "Choose a gitmoji:")
+                       (candidates . ,(gitmoji-insert--candidates))
+                       (action . (lambda (candidate) (gitmoji-insert--action (append '(" ") candidate))))))
+    (helm-quit nil)))
+
+(defun gitmoji-insert-consult ()
+  "Choose a gitmoji with consult and insert it in the current buffer."
+  (interactive)
+  (let* ((candidates (gitmoji-insert--candidates))
+         (candidate (assoc
+                     (condition-case nil
+                         (completing-read "Choose a gitmoji: " candidates)
+                       (quit nil))
+                     candidates)))
+    (gitmoji-insert--action candidate)))
 
 (defun gitmoji-insert ()
+  "Choose a gitmoji and insert it in the current buffer."
+  (interactive)
   (cond
-   ((memql 'ivy gitmoji-selection-backend) (gitmoji-insert-ivy))
-   ((memql 'helm gitmoji-selection-backend) (gitmoji-insert-helm))
-   (t (warn "No valid backend selected for Gitmoji."))
-  ))
+   ((and (memql 'ivy gitmoji-selection-backend) (featurep 'ivy)) (gitmoji-insert-ivy))
+   ((and (memql 'helm gitmoji-selection-backend) (featurep 'helm)) (gitmoji-insert-helm))
+   ((and (memql 'consult gitmoji-selection-backend) (featurep 'consult)) (gitmoji-insert-consult))
+   (t (warn "No valid backend selected for Gitmoji."))))
 
 ;;;###autoload
 (define-minor-mode gitmoji-commit-mode
